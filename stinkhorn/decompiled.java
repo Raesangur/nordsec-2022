@@ -25,10 +25,10 @@ public class StinkhornEncrypter
         }
         String id = args[0];
         String transaction = args[1];
-        id = invokedynamic(makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;, id);
+        id = id + "padddddd";
         id = id.substring(0, 8);
-        transaction = invokedynamic(makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;, transaction);
-        final String encrypted = invokedynamic(makeConcatWithConstants:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;, getCalculatedID(id), encrypt(transaction, StinkhornEncrypter.PWD, id, StinkhornEncrypter.COUNT));
+        transaction = "----- BEGIN TRANSACTION -----\n" + transaction + "\n----- END TRANSACTION -----\n";
+        final String encrypted = getCalculatedID(id) + encrypt(transaction, StinkhornEncrypter.PWD, id, StinkhornEncrypter.COUNT);
         System.out.println("Calculated ID\t\tEncrypted transaction");
         System.out.println(encrypted);
     }
@@ -41,6 +41,10 @@ public class StinkhornEncrypter
             final SecretKey key = kf.generateSecret(keySpec);
             final Cipher cipher = Cipher.getInstance(method);
             final PBEParameterSpec params = new PBEParameterSpec(salt.getBytes(), noIterations);
+
+            System.out.println("key: " + Base64.getEncoder().encodeToString(key.getEncoded()));
+            System.out.println("salt: " + salt);
+            
             cipher.init(1, key, params);
             return Base64.getEncoder().encodeToString(cipher.doFinal(data.getBytes()));
         }
@@ -50,7 +54,7 @@ public class StinkhornEncrypter
     }
     
     public static String getCalculatedID(final String id) {
-        final String tmpId = invokedynamic(makeConcatWithConstants:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;, StinkhornEncrypter.PWD, id);
+        final String tmpId = PWD + id;
         try {
             byte[] calculatedID = tmpId.getBytes("UTF-8");
             final MessageDigest md = MessageDigest.getInstance("MD5");
@@ -71,7 +75,7 @@ public class StinkhornEncrypter
             final int decimal = aByte & 0xFF;
             String hex = Integer.toHexString(decimal);
             if (hex.length() % 2 == 1) {
-                hex = invokedynamic(makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;, hex);
+                hex = "0" + hex;
             }
             result.append(hex);
         }
